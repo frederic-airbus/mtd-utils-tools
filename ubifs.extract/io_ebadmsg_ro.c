@@ -89,7 +89,7 @@ int ubifs_leb_read(const struct ubifs_info *c, int lnum, void *buf, int offs,
 		   int len, int even_ebadmsg)
 {
 	int err = 0;
-	off_t pos = (off_t)lnum * c->leb_size + offs;
+	off64_t pos = (off64_t)lnum * c->leb_size + offs;
 
 	if (!len)
 		return 0;
@@ -100,13 +100,19 @@ int ubifs_leb_read(const struct ubifs_info *c, int lnum, void *buf, int offs,
 	 * content before reading.
 	 */
 	memset(buf, 0, len);
-	if (lseek(c->dev_fd, pos, SEEK_SET) != pos) {
+	if (lseek64(c->dev_fd, pos, SEEK_SET) != pos) {
 		err = -errno;
 		goto out;
 	}
 
 	if (read(c->dev_fd, buf, len) != len)
 		err = -errno;
+
+	if (err == -EIO)
+	{
+		err = -EBADMSG;
+		memset(buf, 0xFF, len);
+	}
 out:
 	/*
 	 * In case of %-EBADMSG print the error message only if the
@@ -123,8 +129,13 @@ out:
 int ubifs_leb_write(struct ubifs_info *c, int lnum, const void *buf, int offs,
 		    int len)
 {
+
+	printf("ubifs_leb_write forbiden\n");
+	exit(-1);
+	return -1;
+#if 0	
 	int err = 0;
-	off_t pos = (off_t)lnum * c->leb_size + offs;
+	off64_t pos = (off64_t)lnum * c->leb_size + offs;
 
 	ubifs_assert(c, !c->ro_media && !c->ro_mount);
 	if (c->ro_error)
@@ -137,7 +148,7 @@ int ubifs_leb_write(struct ubifs_info *c, int lnum, const void *buf, int offs,
 	if (!len)
 		return 0;
 
-	if (lseek(c->dev_fd, pos, SEEK_SET) != pos) {
+	if (lseek64(c->dev_fd, pos, SEEK_SET) != pos) {
 		err = -errno;
 		goto out;
 	}
@@ -151,12 +162,13 @@ out:
 		dump_stack();
 	}
 	return err;
+#endif
 }
 
 int ubifs_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len)
 {
 	int err = 0;
-	off_t pos = (off_t)lnum * c->leb_size;
+	off64_t pos = (off64_t)lnum * c->leb_size;
 
 	ubifs_assert(c, !c->ro_media && !c->ro_mount);
 	if (c->ro_error)
@@ -173,7 +185,7 @@ int ubifs_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len)
 	if (!len)
 		return 0;
 
-	if (lseek(c->dev_fd, pos, SEEK_SET) != pos) {
+	if (lseek64(c->dev_fd, pos, SEEK_SET) != pos) {
 		err = -errno;
 		goto out;
 	}

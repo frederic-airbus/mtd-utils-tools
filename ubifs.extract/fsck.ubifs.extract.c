@@ -19,6 +19,10 @@
 #include "misc.h"
 #include "fsck.ubifs.h"
 
+
+#include "ads_dump.h"
+
+
 /*
  * Because we copy functions from the kernel, we use a subset of the UBIFS
  * file-system description object struct ubifs_info.
@@ -28,12 +32,13 @@ static struct ubifs_info *c = &info_;
 
 int exit_code = FSCK_OK;
 
-static const char *optstring = "Vrg:abyn";
+static const char *optstring = "Vrgl:abyn";
 
 static const struct option longopts[] = {
 	{"version",            0, NULL, 'V'},
 	{"reserve",            1, NULL, 'r'},
 	{"debug",              1, NULL, 'g'},
+	{"lebToDump",          1, NULL, 'l'},
 	{"auto",               1, NULL, 'a'},
 	{"rebuild",            1, NULL, 'b'},
 	{"yes",                1, NULL, 'y'},
@@ -45,6 +50,7 @@ static const char *helptext =
 "Usage: fsck.ubifs [OPTIONS] ubi_volume\n"
 "Check & repair UBIFS filesystem on a given UBI volume\n\n"
 "Options:\n"
+"-l                       Dump a LEB\n"
 "-V, --version            Display version information\n"
 "-g, --debug=LEVEL        Display debug information (0 - none, 1 - error message,\n"
 "                         2 - warning message[default], 3 - notice message, 4 - debug message)\n"
@@ -80,6 +86,7 @@ static inline void usage(void)
 static void get_options(int argc, char *argv[], int *mode)
 {
 	int opt, i, submode = 0;
+	 int lebToDump;
 	char *endp;
 
 	while (1) {
@@ -98,6 +105,17 @@ static void get_options(int argc, char *argv[], int *mode)
 				usage();
 			}
 			break;
+                case 'l':
+			lebToDump = strtol(optarg, &endp, 0);
+			ads_set_leb_to_dump(lebToDump);
+                        if (*endp != '\0' || endp == optarg ||
+                            lebToDump < 0 ) {
+                                log_err(c, 0, "bad leb to dump '%s'", optarg);
+                                usage();
+                        }
+                        break;
+
+			
 		case 'a':
 			if (*mode != NORMAL_MODE) {
 conflict_opt:
@@ -362,6 +380,14 @@ static int init_fsck_info(struct ubifs_info *c, int argc, char *argv[])
 	init_ubifs_info(c, FSCK_PROGRAM_TYPE);
 	get_options(argc, argv, &mode);
 
+	/* Added part: Ignore some option and run in read only mode */
+	printf("Forced to CHECK_MODE & ro_mount = 1\n");
+	mode = CHECK_MODE;
+	c->ro_mount = 1;
+
+
+
+
 	fsck = calloc(1, sizeof(struct ubifs_fsck_info));
 	if (!fsck) {
 		err = -errno;
@@ -598,6 +624,14 @@ int main(int argc, char *argv[])
 	 * Step 5: Recover isize
 	 */
 	err = ubifs_load_filesystem(c);
+
+
+	/* Added part: */
+	/* Ensure we don't do other thing */
+	printf("Calling dump function\n");
+	ads_dump(c);
+	goto out_close;
+
 	if (err) {
 		if (FSCK(c)->try_rebuild)
 			ubifs_rebuild_filesystem(c);
