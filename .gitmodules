@@ -1,4 +1,4 @@
 [submodule "2.3.0"]
 	path = 2.3.0
 	url = git://git.infradead.org/mtd-utils.git
-	branch = mtd-utils-2.3.0
+	branch = 4594fc1f4496a0ed55cabd31fbeba4e3fbf05602
