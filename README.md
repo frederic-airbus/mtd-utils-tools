@@ -8,15 +8,15 @@ Many improvement can be done ! So it's a quick & dirty SW.
 First the software scan mtd partition to find the association between Logical/Physical Block.
 mtd partition hardcoded to /dev/mtd1
 
-In the first part of the SW, it browse specified directory to find ".json" file's.
+In the second part of the SW, browse specified directory to find ".json" file's.
 Matched file's saved to an array.
 
-In the second part, saved files are extracted to "/home/root" directory.
+In the third part, saved files are extracted to "/home/root" directory.
 PEB+Offset of data part of file are printed.
 Script to extract file's with a standalone script with nanddump command are generated.
 
-In the third part, all filesystem's browsed, for each file's the PEB printed.
+In the fourth part, all filesystem's browsed, for each file's the PEB printed.
 
-Few memory leak's, depend on the number of file's.
-Thanks for the skrinker.c file, after each file's the TNC indexation freed !
-Without shrinker, depend of the complexity of the filesystem (size & file #), RAM size can reach more than 100MB !
+Few memory leak's, depend on the number of file's...
+Thanks for the skrinker.c file, in fourth part, after each file's the TNC indexation freed !
+Without shrinker, depend of the complexity of the filesystem (file number and size), RAM size can reach more than 100MB !
