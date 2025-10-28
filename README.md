@@ -14,7 +14,7 @@ Matched file's saved to an array.
 
 In the third part, saved files are extracted to "/home/root" directory.
 PEB+Offset of data part of file are printed.
-Script to extract file's with a standalone script with nanddump command are generated.
+Script to extract file's with a standalone script with nanddump command are also generated.
 
 In the fourth part, all filesystem's browsed, for each file's the PEB printed.
 
