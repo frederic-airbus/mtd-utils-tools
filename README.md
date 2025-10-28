@@ -7,6 +7,7 @@ Many improvement can be done ! So it's a quick & dirty SW.
 
 First the software scan mtd partition to find the association between Logical/Physical Block.
 mtd partition hardcoded to /dev/mtd1
+Seem unable to obtain via ioctl these information.
 
 In the second part of the SW, browse specified directory to find ".json" file's.
 Matched file's saved to an array.
