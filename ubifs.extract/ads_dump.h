@@ -1,7 +1,10 @@
-/**
- * AIRBUS DEFENCE & SPACE
- * October 2025
- * F. FRAYSSE
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * This file is part of UBIFS.
+ *
+ * Copyright (C) 2025 AIRBUS Defence & Space
+ *
+ * Authors: Frederic Fraysse
  */
 #ifndef __ADS_DUMP_H__
 #define __ADS_DUMP_H__
